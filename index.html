@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f1e8">
+  <title>Metode 264 — Manual Brew Calculator</title>
+  <style>
+    :root {
+      --bg: #f5f1e8;
+      --paper: #fffdf8;
+      --ink: #25251f;
+      --muted: #77766d;
+      --line: #ded9cc;
+      --accent: #315b45;
+      --accent-soft: #e5ede5;
+      --warm: #e9ddc8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: var(--bg); color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+    .wrap { width: min(920px, calc(100% - 32px)); margin: 0 auto; padding: 36px 0 48px; }
+    header { margin-bottom: 26px; }
+    .eyebrow { color: var(--accent); text-transform: uppercase; letter-spacing: .16em; font-size: .76rem; font-weight: 800; }
+    h1 { font-size: clamp(2.2rem, 7vw, 4.2rem); line-height: 1; letter-spacing: -.055em; margin: 10px 0 14px; }
+    .intro { max-width: 610px; color: var(--muted); font-size: 1.05rem; margin: 0; }
+    .layout { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 18px; align-items: start; }
+    .panel { background: var(--paper); border: 1px solid var(--line); border-radius: 22px; padding: 24px; box-shadow: 0 8px 24px #322b1a08; }
+    h2 { margin: 0 0 18px; font-size: 1.15rem; letter-spacing: -.02em; }
+    .field { margin-bottom: 19px; }
+    label { display: block; font-size: .88rem; font-weight: 700; margin-bottom: 8px; }
+    .input-row { display: flex; align-items: center; gap: 10px; }
+    input, select {
+      width: 100%; min-width: 0; border: 1px solid var(--line); border-radius: 12px;
+      padding: 13px 14px; font: inherit; color: var(--ink); background: #fff;
+      outline: none;
+    }
+    input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px #315b4518; }
+    .unit { color: var(--muted); font-size: .9rem; min-width: 28px; }
+    .hint { color: var(--muted); font-size: .82rem; margin: 7px 0 0; }
+    .total { background: var(--accent); color: white; border-radius: 16px; padding: 18px 20px; margin-top: 4px; }
+    .total small { display: block; opacity: .8; font-size: .8rem; }
+    .total strong { display: block; font-size: 2.15rem; letter-spacing: -.04em; line-height: 1.25; }
+    .pours { display: grid; gap: 12px; }
+    .pour { display: grid; grid-template-columns: 48px 1fr auto; gap: 13px; align-items: center; border: 1px solid var(--line); border-radius: 16px; padding: 15px; }
+    .num { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 13px; background: var(--accent-soft); color: var(--accent); font-weight: 850; }
+    .pour h3 { margin: 0; font-size: 1rem; }
+    .pour p { margin: 3px 0 0; color: var(--muted); font-size: .82rem; }
+    .amount { font-size: clamp(1.15rem, 3vw, 1.55rem); font-weight: 850; white-space: nowrap; letter-spacing: -.03em; }
+    .amount span { font-size: .8rem; font-weight: 600; color: var(--muted); letter-spacing: 0; }
+    .formula { margin-top: 17px; background: #f7f3eb; border-radius: 14px; padding: 15px 16px; color: #5e5b51; font-size: .88rem; }
+    .formula code { color: var(--ink); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .section { margin-top: 22px; }
+    .section p { color: var(--muted); margin: 7px 0; }
+    .pill { display: inline-block; background: var(--warm); border-radius: 999px; padding: 5px 10px; font-size: .78rem; font-weight: 750; margin: 0 5px 5px 0; }
+    footer { margin-top: 25px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; color: var(--muted); font-size: .8rem; }
+    @media (max-width: 680px) {
+      .wrap { padding-top: 26px; }
+      .layout { grid-template-columns: 1fr; }
+      .panel { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <div class="eyebrow">Manual brew · Recipe 01</div>
+      <h1>Metode 264<span style="color:var(--accent)">.</span></h1>
+      <p class="intro">Kalkulator seduh manual brew dengan tiga kali tuang. Masukkan dosis kopi dan rasio; target air serta volume setiap pour akan dihitung otomatis.</p>
+    </header>
+
+    <div class="layout">
+      <section class="panel" aria-labelledby="settings-title">
+        <h2 id="settings-title">Atur seduhan</h2>
+        <div class="field">
+          <label for="coffee">Dosis kopi</label>
+          <div class="input-row">
+            <input id="coffee" type="number" min="1" max="100" step="0.5" value="15">
+            <span class="unit">gram</span>
+          </div>
+        </div>
+        <div class="field">
+          <label for="ratio">Rasio kopi : air</label>
+          <div class="input-row">
+            <span class="unit">1 :</span>
+            <input id="ratio" type="number" min="1" max="25" step="0.5" value="15">
+          </div>
+          <p class="hint">Contoh: 1:15 berarti 1 gram kopi untuk 15 ml air.</p>
+        </div>
+        <div class="total">
+          <small>Total air</small>
+          <strong><span id="total">225</span> <span style="font-size:1rem;font-weight:650;letter-spacing:0">ml</span></strong>
+          <small id="dose-summary">15 g kopi · rasio 1:15</small>
+        </div>
+        <div class="section">
+          <h2>Prinsip Metode 264</h2>
+          <span class="pill">2× dosis untuk bloom</span>
+          <span class="pill">60% sisa air</span>
+          <span class="pill">3 tahap tuang</span>
+          <p>Bloom menggunakan air sebanyak 2 kali berat kopi. Tuangan kedua menambahkan 60% dari sisa air, lalu tuangan ketiga menyelesaikan hingga total target.</p>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="pours-title">
+        <h2 id="pours-title">Panduan tuang</h2>
+        <div class="pours">
+          <article class="pour">
+            <div class="num">1</div>
+            <div><h3>Bloom</h3><p>Basahi seluruh bubuk kopi</p></div>
+            <div class="amount"><span id="pour1">30</span> <span>ml</span></div>
+          </article>
+          <article class="pour">
+            <div class="num">2</div>
+            <div><h3>Tuangan kedua</h3><p>Naikkan total air ke angka ini</p></div>
+            <div class="amount"><span id="pour2">147</span> <span>ml</span></div>
+          </article>
+          <article class="pour">
+            <div class="num">3</div>
+            <div><h3>Tuangan akhir</h3><p>Tuang hingga total target</p></div>
+            <div class="amount"><span id="pour3">225</span> <span>ml</span></div>
+          </article>
+        </div>
+        <div class="formula">
+          <strong>Rumus yang digunakan</strong><br>
+          <code>Bloom = 2 × dosis kopi</code><br>
+          <code>Pour 2 = bloom + 60% × (total air − bloom)</code><br>
+          <code>Pour 3 = total air</code>
+        </div>
+        <div class="section">
+          <h2>Contoh default</h2>
+          <p>15 g kopi · rasio 1:15 · total 225 ml</p>
+          <p><strong>30 ml → 147 ml → 225 ml</strong></p>
+          <p class="hint">Angka pour 2 dan pour 3 adalah target kumulatif pada timbangan, bukan volume tambahan. Pada contoh ini, tuangan kedua menambah 117 ml dan tuangan ketiga menambah 78 ml.</p>
+        </div>
+      </section>
+    </div>
+    <footer>
+      <span>Metode 264 · Manual Brew Notes</span>
+      <span>Resep awal — resep lain dapat ditambahkan di halaman ini.</span>
+    </footer>
+  </main>
+  <script>
+    const coffeeInput = document.getElementById('coffee');
+    const ratioInput = document.getElementById('ratio');
+    const fmt = n => (Math.round(n * 10) / 10).toLocaleString('id-ID', { maximumFractionDigits: 1 });
+    function calculate() {
+      const coffee = Math.max(0, Number(coffeeInput.value) || 0);
+      const ratio = Math.max(0, Number(ratioInput.value) || 0);
+      const total = coffee * ratio;
+      const bloom = coffee * 2;
+      const pour2 = bloom + 0.6 * (total - bloom);
+      document.getElementById('total').textContent = fmt(total);
+      document.getElementById('pour1').textContent = fmt(bloom);
+      document.getElementById('pour2').textContent = fmt(pour2);
+      document.getElementById('pour3').textContent = fmt(total);
+      document.getElementById('dose-summary').textContent = `${fmt(coffee)} g kopi · rasio 1:${fmt(ratio)}`;
+    }
+    coffeeInput.addEventListener('input', calculate);
+    ratioInput.addEventListener('input', calculate);
+    calculate();
+  </script>
+</body>
+</html>
