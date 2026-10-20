@@ -1,166 +1,108 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f5f1e8">
-  <title>Metode 264 — Manual Brew Calculator</title>
-  <style>
-    :root {
-      --bg: #f5f1e8;
-      --paper: #fffdf8;
-      --ink: #25251f;
-      --muted: #77766d;
-      --line: #ded9cc;
-      --accent: #315b45;
-      --accent-soft: #e5ede5;
-      --warm: #e9ddc8;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0; background: var(--bg); color: var(--ink);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      line-height: 1.5;
-    }
-    .wrap { width: min(920px, calc(100% - 32px)); margin: 0 auto; padding: 36px 0 48px; }
-    header { margin-bottom: 26px; }
-    .eyebrow { color: var(--accent); text-transform: uppercase; letter-spacing: .16em; font-size: .76rem; font-weight: 800; }
-    h1 { font-size: clamp(2.2rem, 7vw, 4.2rem); line-height: 1; letter-spacing: -.055em; margin: 10px 0 14px; }
-    .intro { max-width: 610px; color: var(--muted); font-size: 1.05rem; margin: 0; }
-    .layout { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 18px; align-items: start; }
-    .panel { background: var(--paper); border: 1px solid var(--line); border-radius: 22px; padding: 24px; box-shadow: 0 8px 24px #322b1a08; }
-    h2 { margin: 0 0 18px; font-size: 1.15rem; letter-spacing: -.02em; }
-    .field { margin-bottom: 19px; }
-    label { display: block; font-size: .88rem; font-weight: 700; margin-bottom: 8px; }
-    .input-row { display: flex; align-items: center; gap: 10px; }
-    input, select {
-      width: 100%; min-width: 0; border: 1px solid var(--line); border-radius: 12px;
-      padding: 13px 14px; font: inherit; color: var(--ink); background: #fff;
-      outline: none;
-    }
-    input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px #315b4518; }
-    .unit { color: var(--muted); font-size: .9rem; min-width: 28px; }
-    .hint { color: var(--muted); font-size: .82rem; margin: 7px 0 0; }
-    .total { background: var(--accent); color: white; border-radius: 16px; padding: 18px 20px; margin-top: 4px; }
-    .total small { display: block; opacity: .8; font-size: .8rem; }
-    .total strong { display: block; font-size: 2.15rem; letter-spacing: -.04em; line-height: 1.25; }
-    .pours { display: grid; gap: 12px; }
-    .pour { display: grid; grid-template-columns: 48px 1fr auto; gap: 13px; align-items: center; border: 1px solid var(--line); border-radius: 16px; padding: 15px; }
-    .num { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 13px; background: var(--accent-soft); color: var(--accent); font-weight: 850; }
-    .pour h3 { margin: 0; font-size: 1rem; }
-    .pour p { margin: 3px 0 0; color: var(--muted); font-size: .82rem; }
-    .amount { font-size: clamp(1.15rem, 3vw, 1.55rem); font-weight: 850; white-space: nowrap; letter-spacing: -.03em; }
-    .amount span { font-size: .8rem; font-weight: 600; color: var(--muted); letter-spacing: 0; }
-    .formula { margin-top: 17px; background: #f7f3eb; border-radius: 14px; padding: 15px 16px; color: #5e5b51; font-size: .88rem; }
-    .formula code { color: var(--ink); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
-    .section { margin-top: 22px; }
-    .section p { color: var(--muted); margin: 7px 0; }
-    .pill { display: inline-block; background: var(--warm); border-radius: 999px; padding: 5px 10px; font-size: .78rem; font-weight: 750; margin: 0 5px 5px 0; }
-    footer { margin-top: 25px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; color: var(--muted); font-size: .8rem; }
-    @media (max-width: 680px) {
-      .wrap { padding-top: 26px; }
-      .layout { grid-template-columns: 1fr; }
-      .panel { padding: 20px; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f5f1e8">
+<title>264 Brew — Manual Brew Recipes</title>
+<style>
+:root{--bg:#f5f1e8;--paper:#fffdf8;--ink:#25251f;--muted:#77766d;--line:#ded9cc;--accent:#315b45;--soft:#e5ede5;--warm:#e9ddc8}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.5}
+.wrap{width:min(960px,calc(100% - 32px));margin:auto;padding:34px 0 46px}header{margin-bottom:24px}.eyebrow{color:var(--accent);text-transform:uppercase;letter-spacing:.16em;font-size:.76rem;font-weight:800}
+h1{font-size:clamp(2.4rem,7vw,4.4rem);line-height:1;letter-spacing:-.06em;margin:10px 0 14px}.intro{max-width:650px;color:var(--muted);font-size:1.02rem;margin:0}
+.tabs{display:flex;gap:9px;flex-wrap:wrap;margin:24px 0 18px}.tab{border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:999px;padding:11px 17px;font:inherit;font-weight:750;cursor:pointer}.tab.active{background:var(--accent);border-color:var(--accent);color:white}
+.layout{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:18px;align-items:start}.panel{background:var(--paper);border:1px solid var(--line);border-radius:22px;padding:23px;box-shadow:0 8px 24px #322b1a08}
+h2{margin:0 0 17px;font-size:1.15rem;letter-spacing:-.02em}.field{margin-bottom:17px}label{display:block;font-size:.88rem;font-weight:750;margin-bottom:7px}
+.input-row{display:flex;align-items:center;gap:10px}input,select{width:100%;min-width:0;border:1px solid var(--line);border-radius:12px;padding:12px 13px;font:inherit;color:var(--ink);background:#fff;outline:none}input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px #315b4518}.unit{color:var(--muted);font-size:.9rem;min-width:28px}.hint{color:var(--muted);font-size:.82rem;margin:6px 0 0}
+.total{background:var(--accent);color:white;border-radius:16px;padding:17px 19px;margin-top:5px}.total small{display:block;opacity:.82;font-size:.8rem}.total strong{display:block;font-size:2.1rem;letter-spacing:-.04em;line-height:1.3}
+.pours{display:grid;gap:10px}.pour{display:grid;grid-template-columns:42px 1fr auto;gap:12px;align-items:center;border:1px solid var(--line);border-radius:15px;padding:13px}.num{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--soft);color:var(--accent);font-weight:850}.pour h3{margin:0;font-size:.98rem}.pour p{margin:3px 0 0;color:var(--muted);font-size:.8rem}.amount{font-size:clamp(1.1rem,3vw,1.45rem);font-weight:850;white-space:nowrap;letter-spacing:-.03em}.amount span{font-size:.78rem;font-weight:650;color:var(--muted);letter-spacing:0}
+.formula{margin-top:15px;background:#f7f3eb;border-radius:14px;padding:14px 15px;color:#5e5b51;font-size:.86rem}.formula code{color:var(--ink);font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.section{margin-top:20px}.section p{color:var(--muted);margin:7px 0}.pill{display:inline-block;background:var(--warm);border-radius:999px;padding:5px 10px;font-size:.77rem;font-weight:750;margin:0 4px 5px 0}
+footer{margin-top:24px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:.8rem}.hidden{display:none!important}
+@media(max-width:700px){.wrap{padding-top:25px}.layout{grid-template-columns:1fr}.panel{padding:19px}}
+</style>
 </head>
 <body>
-  <main class="wrap">
-    <header>
-      <div class="eyebrow">Manual brew · Recipe 01</div>
-      <h1>Metode 264<span style="color:var(--accent)">.</span></h1>
-      <p class="intro">Kalkulator seduh manual brew dengan tiga kali tuang. Masukkan dosis kopi dan rasio; target air serta volume setiap pour akan dihitung otomatis.</p>
-    </header>
+<main class="wrap">
+<header>
+<div class="eyebrow">Manual brew · Recipe collection</div>
+<h1>264 Brew<span style="color:var(--accent)">.</span></h1>
+<p class="intro">Catatan resep seduh manual yang praktis. Pilih metode, masukkan dosis kopi dan rasio, lalu ikuti target air di timbangan—tanpa hitung ulang setiap menyeduh.</p>
+</header>
 
-    <div class="layout">
-      <section class="panel" aria-labelledby="settings-title">
-        <h2 id="settings-title">Atur seduhan</h2>
-        <div class="field">
-          <label for="coffee">Dosis kopi</label>
-          <div class="input-row">
-            <input id="coffee" type="number" min="1" max="100" step="0.5" value="15">
-            <span class="unit">gram</span>
-          </div>
-        </div>
-        <div class="field">
-          <label for="ratio">Rasio kopi : air</label>
-          <div class="input-row">
-            <span class="unit">1 :</span>
-            <input id="ratio" type="number" min="1" max="25" step="0.5" value="15">
-          </div>
-          <p class="hint">Contoh: 1:15 berarti 1 gram kopi untuk 15 ml air.</p>
-        </div>
-        <div class="total">
-          <small>Total air</small>
-          <strong><span id="total">225</span> <span style="font-size:1rem;font-weight:650;letter-spacing:0">ml</span></strong>
-          <small id="dose-summary">15 g kopi · rasio 1:15</small>
-        </div>
-        <div class="section">
-          <h2>Prinsip Metode 264</h2>
-          <span class="pill">2× dosis untuk bloom</span>
-          <span class="pill">60% sisa air</span>
-          <span class="pill">3 tahap tuang</span>
-          <p>Bloom menggunakan air sebanyak 2 kali berat kopi. Tuangan kedua menambahkan 60% dari sisa air, lalu tuangan ketiga menyelesaikan hingga total target.</p>
-        </div>
-      </section>
+<nav class="tabs" aria-label="Pilih resep">
+<button class="tab active" id="tab264" type="button" onclick="setRecipe('264')">Metode 264</button>
+<button class="tab" id="tab46" type="button" onclick="setRecipe('46')">Tetsu Kasuya 4:6</button>
+</nav>
 
-      <section class="panel" aria-labelledby="pours-title">
-        <h2 id="pours-title">Panduan tuang</h2>
-        <div class="pours">
-          <article class="pour">
-            <div class="num">1</div>
-            <div><h3>Bloom</h3><p>Basahi seluruh bubuk kopi</p></div>
-            <div class="amount"><span id="pour1">30</span> <span>ml</span></div>
-          </article>
-          <article class="pour">
-            <div class="num">2</div>
-            <div><h3>Tuangan kedua</h3><p>Naikkan total air ke angka ini</p></div>
-            <div class="amount"><span id="pour2">147</span> <span>ml</span></div>
-          </article>
-          <article class="pour">
-            <div class="num">3</div>
-            <div><h3>Tuangan akhir</h3><p>Tuang hingga total target</p></div>
-            <div class="amount"><span id="pour3">225</span> <span>ml</span></div>
-          </article>
-        </div>
-        <div class="formula">
-          <strong>Rumus yang digunakan</strong><br>
-          <code>Bloom = 2 × dosis kopi</code><br>
-          <code>Pour 2 = bloom + 60% × (total air − bloom)</code><br>
-          <code>Pour 3 = total air</code>
-        </div>
-        <div class="section">
-          <h2>Contoh default</h2>
-          <p>15 g kopi · rasio 1:15 · total 225 ml</p>
-          <p><strong>30 ml → 147 ml → 225 ml</strong></p>
-          <p class="hint">Angka pour 2 dan pour 3 adalah target kumulatif pada timbangan, bukan volume tambahan. Pada contoh ini, tuangan kedua menambah 117 ml dan tuangan ketiga menambah 78 ml.</p>
-        </div>
-      </section>
-    </div>
-    <footer>
-      <span>Metode 264 · Manual Brew Notes</span>
-      <span>Resep awal — resep lain dapat ditambahkan di halaman ini.</span>
-    </footer>
-  </main>
-  <script>
-    const coffeeInput = document.getElementById('coffee');
-    const ratioInput = document.getElementById('ratio');
-    const fmt = n => (Math.round(n * 10) / 10).toLocaleString('id-ID', { maximumFractionDigits: 1 });
-    function calculate() {
-      const coffee = Math.max(0, Number(coffeeInput.value) || 0);
-      const ratio = Math.max(0, Number(ratioInput.value) || 0);
-      const total = coffee * ratio;
-      const bloom = coffee * 2;
-      const pour2 = bloom + 0.6 * (total - bloom);
-      document.getElementById('total').textContent = fmt(total);
-      document.getElementById('pour1').textContent = fmt(bloom);
-      document.getElementById('pour2').textContent = fmt(pour2);
-      document.getElementById('pour3').textContent = fmt(total);
-      document.getElementById('dose-summary').textContent = `${fmt(coffee)} g kopi · rasio 1:${fmt(ratio)}`;
-    }
-    coffeeInput.addEventListener('input', calculate);
-    ratioInput.addEventListener('input', calculate);
-    calculate();
-  </script>
+<div class="layout">
+<section class="panel">
+<h2>Atur seduhan</h2>
+<div class="field"><label for="coffee">Dosis kopi</label><div class="input-row"><input id="coffee" type="number" min="1" max="100" step="0.5" value="15"><span class="unit">gram</span></div></div>
+<div class="field"><label for="ratio">Rasio kopi : air</label><div class="input-row"><span class="unit">1 :</span><input id="ratio" type="number" min="1" max="25" step="0.5" value="15"></div><p class="hint">Contoh 1:15 berarti 1 gram kopi untuk 15 ml air.</p></div>
+
+<div id="settings264">
+<div class="section"><h2>Karakter Metode 264</h2><span class="pill">Bloom 2× dosis</span><span class="pill">60% dari sisa air</span><p>Bloom, tuangan kedua hingga 60% dari sisa air, lalu tuangan akhir hingga target total.</p></div>
+</div>
+
+<div id="settings46" class="hidden">
+<div class="field"><label for="balance">Pembagian 40% awal</label><select id="balance"><option value="sweet">Lebih manis · 45% / 55%</option><option value="balanced" selected>Seimbang · 50% / 50%</option><option value="bright">Lebih cerah · 55% / 45%</option></select><p class="hint">Dua tuangan pertama bersama-sama = 40% total air.</p></div>
+<div class="field"><label for="strength">Pembagian 60% akhir</label><select id="strength"><option value="1">Ringan · 1 tuangan</option><option value="2">Sedang · 2 tuangan</option><option value="3" selected>Lebih kuat · 3 tuangan</option></select><p class="hint">Lebih banyak tuangan akhir umumnya meningkatkan agitasi dan ekstraksi.</p></div>
+<div class="section"><h2>Karakter Tetsu Kasuya 4:6</h2><span class="pill">40% keseimbangan rasa</span><span class="pill">60% kekuatan</span><p>Metode 4:6 membagi air menjadi dua fase. Fase awal untuk mengatur keseimbangan manis-asam; fase akhir untuk mengatur kekuatan seduhan.</p></div>
+</div>
+
+<div class="total"><small>Total air</small><strong><span id="total">225</span> <span style="font-size:1rem;font-weight:650;letter-spacing:0">ml</span></strong><small id="dose-summary">15 g kopi · rasio 1:15</small></div>
+</section>
+
+<section class="panel">
+<h2 id="pours-title">Panduan tuang · Metode 264</h2>
+<div class="pours" id="pours"></div>
+<div class="formula" id="formula"></div>
+<div class="section"><h2>Catatan seduh</h2><p id="notes">Angka tuang adalah target kumulatif pada timbangan, bukan volume tambahan. Tuang perlahan dan konsisten.</p><p class="hint" id="timing"></p></div>
+</section>
+</div>
+<footer><span>264 Brew · Manual Brew Notes</span><span>Resep bisa ditambah lagi di halaman ini.</span></footer>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+let recipe='264';
+const fmt=n=>(Math.round(n*10)/10).toLocaleString('id-ID',{maximumFractionDigits:1});
+function setRecipe(name){
+ recipe=name;
+ $('tab264').classList.toggle('active',name==='264');$('tab46').classList.toggle('active',name==='46');
+ $('settings264').classList.toggle('hidden',name!=='264');$('settings46').classList.toggle('hidden',name!=='46');
+ render();
+}
+function render(){
+ const coffee=Math.max(0,Number($('coffee').value)||0), ratio=Math.max(0,Number($('ratio').value)||0), total=coffee*ratio;
+ $('total').textContent=fmt(total);$('dose-summary').textContent=`${fmt(coffee)} g kopi · rasio 1:${fmt(ratio)}`;
+ let targets=[], labels=[], descriptions=[], formula='', notes='', timing='';
+ if(recipe==='264'){
+   const bloom=2*coffee, second=bloom+0.6*(total-bloom);
+   targets=[bloom,second,total];labels=['Bloom','Tuangan kedua','Tuangan akhir'];
+   descriptions=['Basahi seluruh bubuk kopi','Menuju target kumulatif kedua','Selesaikan hingga total target'];
+   formula='<strong>Rumus Metode 264</strong><br><code>Bloom = 2 × dosis kopi</code><br><code>Pour 2 = bloom + 60% × (total air − bloom)</code><br><code>Pour 3 = total air</code>';
+   notes='Angka tuang adalah target kumulatif pada timbangan, bukan volume tambahan.';
+   timing='Contoh 15 g · 1:15: target 30 → 147 → 225 ml.';
+ } else {
+   const split=$('balance').value, n=Number($('strength').value);
+   const firstPhase=total*0.4, secondPhase=total*0.6;
+   const firstFraction=split==='sweet'?0.45:split==='bright'?0.55:0.5;
+   const first=firstPhase*firstFraction, second=firstPhase-first;
+   targets=[first,firstPhase];
+   labels=['Tuangan 1 · fase 40%','Tuangan 2 · selesai fase 40%'];
+   descriptions=[split==='sweet'?'Porsi awal lebih kecil untuk arah rasa lebih manis':split==='bright'?'Porsi awal lebih besar untuk arah rasa lebih cerah':'Pembagian awal seimbang','Total dua tuangan awal = 40% air'];
+   for(let i=1;i<=n;i++){targets.push(firstPhase+secondPhase*i/n);labels.push(`Tuangan ${i+2} · fase 60%`);descriptions.push(`Bagian ${i} dari ${n} tuangan akhir`);}
+   formula=`<strong>Rumus Tetsu Kasuya 4:6</strong><br><code>Fase awal = 40% × total air</code><br><code>Fase akhir = 60% × total air</code><br><code>Target akhir dibagi ${n} tuangan</code>`;
+   notes='Versi dasar menggunakan lima tuangan dengan jeda sekitar 45 detik. Biarkan air turun di antara tuangan; sesuaikan gilingan dan waktu berdasarkan hasil seduhan.';
+   timing=`Fase awal: ${fmt(first)} + ${fmt(second)} ml. Fase akhir: ${n} tuangan × ${fmt(secondPhase/n)} ml.`;
+ }
+ $('pours').innerHTML=targets.map((v,i)=>`<article class="pour"><div class="num">${i+1}</div><div><h3>${labels[i]}</h3><p>${descriptions[i]}</p></div><div class="amount">${fmt(v)} <span>ml</span></div></article>`).join('');
+ $('pours-title').textContent='Panduan tuang · '+(recipe==='264'?'Metode 264':'Tetsu Kasuya 4:6');
+ $('formula').innerHTML=formula;$('notes').textContent=notes;$('timing').textContent=timing;
+}
+['coffee','ratio','balance','strength'].forEach(id=>$(id).addEventListener('input',render));
+render();
+</script>
 </body>
 </html>
