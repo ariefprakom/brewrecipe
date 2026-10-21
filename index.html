@@ -18,6 +18,15 @@ h2{margin:0 0 17px;font-size:1.15rem;letter-spacing:-.02em}.field{margin-bottom:
 .pours{display:grid;gap:10px}.pour{display:grid;grid-template-columns:42px 1fr auto;gap:12px;align-items:center;border:1px solid var(--line);border-radius:15px;padding:13px}.num{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--soft);color:var(--accent);font-weight:850}.pour h3{margin:0;font-size:.98rem}.pour p{margin:3px 0 0;color:var(--muted);font-size:.8rem}.amount{font-size:clamp(1.1rem,3vw,1.45rem);font-weight:850;white-space:nowrap;letter-spacing:-.03em}.amount span{font-size:.78rem;font-weight:650;color:var(--muted);letter-spacing:0}
 .formula{margin-top:15px;background:#f7f3eb;border-radius:14px;padding:14px 15px;color:#5e5b51;font-size:.86rem}.formula code{color:var(--ink);font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
 .section{margin-top:20px}.section p{color:var(--muted);margin:7px 0}.pill{display:inline-block;background:var(--warm);border-radius:999px;padding:5px 10px;font-size:.77rem;font-weight:750;margin:0 4px 5px 0}
+textarea{width:100%;border:1px solid var(--line);border-radius:12px;padding:12px 13px;font:inherit;color:var(--ink);background:#fff;outline:none;resize:vertical}textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px #315b4518}
+.log{margin-top:18px}.log-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start}
+.wheel{width:100%;max-width:470px;margin:auto;display:block}.wheel path.o{cursor:pointer;transition:filter .15s}.wheel path.o:hover{filter:brightness(.92)}.wheel text{pointer-events:none;font-size:4.6px;font-weight:650;text-anchor:middle;dominant-baseline:central}
+.chips{display:flex;flex-wrap:wrap;gap:6px;min-height:32px;margin:12px 0 0}.chip{border:0;border-radius:999px;padding:6px 12px;color:#fff;font:inherit;font-size:.78rem;font-weight:700;cursor:pointer}
+.slider{display:grid;grid-template-columns:100px 1fr 100px;gap:10px;align-items:center;margin-bottom:9px;font-size:.88rem}.slider b{font-weight:750}.slider output{color:var(--muted);font-size:.8rem;text-align:right}input[type=range]{padding:0;border:0;background:none;accent-color:var(--accent)}
+.result{background:var(--soft);border-radius:14px;padding:16px;font-size:.95rem;line-height:1.65;margin:18px 0 12px}
+.actions{display:flex;gap:9px;flex-wrap:wrap}.btn{border:1px solid var(--accent);background:var(--accent);color:#fff;border-radius:12px;padding:10px 16px;font:inherit;font-weight:750;cursor:pointer}.btn.alt{background:var(--paper);color:var(--accent)}
+.hist-item{display:flex;gap:12px;justify-content:space-between;align-items:flex-start;border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:9px}.hist-item small{color:var(--muted)}.hist-item p{margin:3px 0 0;color:var(--ink);font-size:.88rem}.hist-item .btn{padding:6px 11px;font-size:.78rem}
+@media(max-width:700px){.log-grid{grid-template-columns:1fr}.slider{grid-template-columns:86px 1fr 84px}}
 footer{margin-top:24px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:.8rem}.hidden{display:none!important}
 @media(max-width:700px){.wrap{padding-top:25px}.layout{grid-template-columns:1fr}.panel{padding:19px}}
 </style>
@@ -27,7 +36,7 @@ footer{margin-top:24px;display:flex;justify-content:space-between;gap:12px;flex-
 <header>
 <div class="eyebrow">Manual brew · Recipe collection</div>
 <h1>264 Brew<span style="color:var(--accent)">.</span></h1>
-<p class="intro">Catatan resep seduh manual yang praktis. Pilih metode, masukkan dosis kopi dan rasio, lalu ikuti target air di timbangan—tanpa hitung ulang setiap menyeduh.</p>
+<p class="intro">Catatan resep seduh manual yang praktis. Pilih metode, masukkan dosis kopi dan rasio, lalu ikuti target air di timbangan—tanpa hitung ulang setiap menyeduh. Setelah itu, catat dan ceritakan rasanya lewat flavour wheel.</p>
 </header>
 
 <nav class="tabs" aria-label="Pilih resep">
@@ -61,6 +70,20 @@ footer{margin-top:24px;display:flex;justify-content:space-between;gap:12px;flex-
 <div class="section"><h2>Catatan seduh</h2><p id="notes">Angka tuang adalah target kumulatif pada timbangan, bukan volume tambahan. Tuang perlahan dan konsisten.</p><p class="hint" id="timing"></p></div>
 </section>
 </div>
+<section class="panel log">
+<h2>Deskripsikan hasil seduhan</h2>
+<div class="log-grid">
+<div><svg id="wheel" class="wheel" viewBox="-100 -100 200 200" role="img" aria-label="Flavour wheel"></svg><p class="hint" style="text-align:center">Ketuk segmen luar roda untuk memilih rasa yang kamu rasakan.</p><div class="chips" id="chips"></div></div>
+<div>
+<div class="field"><label for="bean">Nama kopi (opsional)</label><input id="bean" type="text" placeholder="mis. Gayo Natural"></div>
+<div id="sliders"></div>
+<div class="field"><label for="ext">Kesan ekstraksi</label><select id="ext"><option value="under">Kurang terekstraksi · asam tajam, tipis</option><option value="ok" selected>Seimbang</option><option value="over">Terlalu terekstraksi · pahit, kering</option></select><p class="hint" id="tip"></p></div>
+<div class="field"><label for="free">Catatan bebas</label><textarea id="free" rows="2" placeholder="mis. mirip teh melati dengan manis madu di akhir"></textarea></div>
+</div></div>
+<div class="result" id="result"></div>
+<div class="actions"><button class="btn" id="copy" type="button">Salin deskripsi</button><button class="btn alt" id="save" type="button">Simpan catatan</button><button class="btn alt" id="reset" type="button">Reset</button></div>
+<div class="section"><h2>Catatan tersimpan</h2><div id="hist"></div></div>
+</section>
 <footer><span>264 Brew · Manual Brew Notes</span><span>Resep bisa ditambah lagi di halaman ini.</span></footer>
 </main>
 <script>
@@ -99,10 +122,65 @@ function render(){
  }
  $('pours').innerHTML=targets.map((v,i)=>`<article class="pour"><div class="num">${i+1}</div><div><h3>${labels[i]}</h3><p>${descriptions[i]}</p></div><div class="amount">${fmt(v)} <span>ml</span></div></article>`).join('');
  $('pours-title').textContent='Panduan tuang · '+(recipe==='264'?'Metode 264':'Tetsu Kasuya 4:6');
- $('formula').innerHTML=formula;$('notes').textContent=notes;$('timing').textContent=timing;
+ $('formula').innerHTML=formula;$('notes').textContent=notes;$('timing').textContent=timing;if(window.updateTasting)updateTasting();
 }
 ['coffee','ratio','balance','strength'].forEach(id=>$(id).addEventListener('input',render));
 render();
+</script>
+<script>
+const WHEEL=[['Buah',350,['Berry','Jeruk','Tropis','Apel/Pir']],['Bunga',320,['Melati','Mawar','Teh']],['Manis',40,['Madu','Karamel','Gula merah','Vanila']],['Kacang',25,['Kacang','Cokelat susu','Cokelat hitam']],['Rempah',275,['Kayu manis','Cengkeh','Lada']],['Panggang',215,['Tembakau','Smoky','Gandum']],['Herbal',130,['Rumput','Herbal','Kayu']],['Asam',62,['Segar','Anggur','Fermentasi']]];
+const AT=[['acid','Keasaman'],['sweet','Kemanisan'],['bitter','Kepahitan'],['body','Body'],['after','Kesan akhir']];
+const W=['','sangat rendah','rendah','sedang','tinggi','sangat tinggi'];
+const TIPS={under:'Saran: gilingan lebih halus, suhu air lebih tinggi, atau tambah agitasi.',ok:'Pertahankan resep ini, catat parameternya.',over:'Saran: gilingan lebih kasar, suhu air lebih rendah, atau kurangi agitasi.'};
+const EXT={under:'Secara keseluruhan seduhan terasa kurang terekstraksi: cenderung asam tajam dan tipis.',ok:'Secara keseluruhan seduhan terasa seimbang.',over:'Secara keseluruhan seduhan terasa terlalu terekstraksi: cenderung pahit dan kering.'};
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const join=a=>a.length>1?a.slice(0,-1).join(', ')+' dan '+a[a.length-1]:(a[0]||'');
+const sel=new Set();let cur='',logs=[];
+try{logs=JSON.parse(localStorage.getItem('264brew-logs')||'[]')}catch(e){}
+$('sliders').innerHTML=AT.map(([k,n])=>`<div class="slider"><b>${n}</b><input type="range" id="s_${k}" min="1" max="5" value="3" aria-label="${n}"><output id="o_${k}">sedang</output></div>`).join('');
+
+function drawWheel(){
+ const N=WHEEL.reduce((a,w)=>a+w[2].length,0),step=360/N;let k=0,h='';
+ const P=(r,a)=>[r*Math.cos(a*Math.PI/180),r*Math.sin(a*Math.PI/180)].map(x=>x.toFixed(2));
+ const arc=(r0,r1,a0,a1)=>{const[a,b]=P(r1,a0),[c,d]=P(r1,a1),[e,f]=P(r0,a1),[g,i]=P(r0,a0),L=a1-a0>180?1:0;return `M${a} ${b}A${r1} ${r1} 0 ${L} 1 ${c} ${d}L${e} ${f}A${r0} ${r0} 0 ${L} 0 ${g} ${i}Z`};
+ const txt=(r,m,t,c)=>{const f=((m%360)+360)%360,fl=f>90&&f<270;return `<text transform="rotate(${fl?m+180:m}) translate(${fl?-r:r},0)" fill="${c}">${t}</text>`};
+ WHEEL.forEach(([n,hue,notes],ci)=>{
+  const a0=-90+k*step,a1=a0+notes.length*step;
+  h+=`<path d="${arc(20,50,a0+.3,a1-.3)}" fill="hsl(${hue} 45% 50%)" stroke="var(--paper)" stroke-width=".5"/>`+txt(35,(a0+a1)/2,n,'#fff');
+  notes.forEach((t,ni)=>{const key=ci+'-'+ni,on=sel.has(key),s=-90+(k+ni)*step,e=s+step;
+   h+=`<path class="o" data-k="${key}" d="${arc(52,98,s+.3,e-.3)}" fill="hsl(${hue} ${on?55:50}% ${on?40:90}%)" stroke="var(--paper)" stroke-width=".5"><title>${t}</title></path>`+txt(75,(s+e)/2,t,on?'#fff':'#4b4a42');});
+  k+=notes.length;
+ });
+ $('wheel').innerHTML=h;
+ $('chips').innerHTML=[...sel].sort().map(key=>{const[a,b]=key.split('-');return `<button class="chip" type="button" data-k="${key}" style="background:hsl(${WHEEL[a][1]} 50% 38%)">${WHEEL[a][2][b]} ✕</button>`}).join('')||'<span class="hint">Belum ada rasa dipilih.</span>';
+}
+function toggle(k){sel.has(k)?sel.delete(k):sel.add(k);drawWheel();updateTasting()}
+$('wheel').addEventListener('click',e=>{const k=e.target.dataset&&e.target.dataset.k;if(k)toggle(k)});
+$('chips').addEventListener('click',e=>{const c=e.target.closest('.chip');if(c)toggle(c.dataset.k)});
+
+function updateTasting(){
+ AT.forEach(([k])=>$('o_'+k).textContent=W[$('s_'+k).value]);
+ const v=k=>+$('s_'+k).value,c=+$('coffee').value||0,r=+$('ratio').value||0,bean=$('bean').value.trim(),free=$('free').value.trim(),ext=$('ext').value;
+ const nm=recipe==='264'?'Metode 264':'Tetsu Kasuya 4:6';
+ let t=`${bean?bean+' · ':''}${nm}, ${fmt(c)} g kopi dengan ${fmt(c*r)} ml air (1:${fmt(r)}). `;
+ t+=`Keasaman terasa ${W[v('acid')]}, kemanisan ${W[v('sweet')]}, dan kepahitan ${W[v('bitter')]}, dengan body ${W[v('body')]} serta kesan akhir (aftertaste) ${W[v('after')]}. `;
+ const g={};sel.forEach(k=>{const[a,b]=k.split('-');(g[a]=g[a]||[]).push(WHEEL[a][2][b].toLowerCase())});
+ const gs=Object.keys(g).sort((a,b)=>a-b).map(a=>`${WHEEL[a][0].toLowerCase()} (${g[a].join(', ')})`);
+ if(gs.length)t+=`Nuansa rasa yang tertangkap: ${join(gs)}. `;
+ t+=EXT[ext];if(free)t+=` Catatan: ${free}`;
+ cur=t;$('result').textContent=t;$('tip').textContent=TIPS[ext];
+}
+['bean','free','ext'].forEach(id=>$(id).addEventListener('input',updateTasting));
+$('sliders').addEventListener('input',updateTasting);
+
+$('copy').onclick=async()=>{try{await navigator.clipboard.writeText(cur)}catch(e){const t=document.createElement('textarea');t.value=cur;document.body.appendChild(t);t.select();document.execCommand('copy');t.remove()}
+ $('copy').textContent='Tersalin ✓';setTimeout(()=>$('copy').textContent='Salin deskripsi',1500)};
+$('reset').onclick=()=>{sel.clear();AT.forEach(([k])=>$('s_'+k).value=3);$('bean').value='';$('free').value='';$('ext').value='ok';drawWheel();updateTasting()};
+function drawLogs(){$('hist').innerHTML=logs.length?logs.map((l,i)=>`<div class="hist-item"><div><small>${esc(l.d)}</small><p>${esc(l.t)}</p></div><button class="btn alt" type="button" data-del="${i}">Hapus</button></div>`).join(''):'<p class="hint">Belum ada catatan tersimpan. Catatan disimpan di browser ini saja.</p>'}
+function saveLogs(){try{localStorage.setItem('264brew-logs',JSON.stringify(logs))}catch(e){}}
+$('save').onclick=()=>{logs.unshift({d:new Date().toLocaleString('id-ID',{dateStyle:'medium',timeStyle:'short'}),t:cur});logs=logs.slice(0,20);saveLogs();drawLogs()};
+$('hist').addEventListener('click',e=>{const d=e.target.dataset.del;if(d!==undefined){logs.splice(+d,1);saveLogs();drawLogs()}});
+drawWheel();drawLogs();updateTasting();
 </script>
 </body>
 </html>
